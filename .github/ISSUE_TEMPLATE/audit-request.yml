@@ -1,0 +1,44 @@
+name: Free strategy audit request
+description: Request one of the first 10 free Quick Checks
+title: "[audit] "
+labels: ["audit-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Free for the first 10 people. Before filling this in, your backtest needs to already be shaped like
+        `tools/audit_submission_template.py` (a `backtest(params, start_shift=0)` function, a `PARAMS` dict,
+        a `CYCLE_DAYS` constant) — see `examples/random_walk_example.py` for a complete reference. Submissions
+        that don't match this shape will be bounced back asking for that first; it's the single biggest thing
+        you can do to make this fast for both of us.
+
+        This is free, unpaid, best-effort work — no guaranteed turnaround time, and I may decline a
+        submission (e.g. if it needs data/API access I don't have, or looks like it'll take much longer than
+        the others). It's a review of your validation process, not investment advice, and not a claim that
+        your strategy is profitable.
+  - type: input
+    id: gist
+    attributes:
+      label: Link to your submission
+      description: A GitHub Gist or repo link containing your filled-in audit_submission_template.py. Do not paste code directly into this form.
+      placeholder: https://gist.github.com/...
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: One paragraph on the strategy
+      description: What it trades, roughly how, and anything you specifically want checked.
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Before you submit
+      options:
+        - label: My submission follows the exact shape in tools/audit_submission_template.py (function names unchanged)
+          required: true
+        - label: I understand this is free, best-effort, with no guaranteed turnaround
+          required: true
+        - label: I understand this reviews my validation process only, not investment advice
+          required: true

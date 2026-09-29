@@ -297,24 +297,26 @@ delta = compare(baseline, candidate)
       <h2>Get your own strategy audited</h2>
       <p>Before AnchorTest was a library, it was three case files from options-strategy-research. I'll run
         the same checks against YOUR backtest and send back a written report: what passed, what didn't, and
-        exactly why — including when nothing passes. Introductory pricing while I build a track record.</p>
+        exactly why — including when nothing passes.</p>
     </div>
 
     <div class="feature-grid">
-      <div class="feature">
-        <div class="fn">Quick Check — $49</div>
-        <p>Anchor-average your existing backtest, run it against the strict multi-metric bar, check any
-          blending/ensembling logic for the artifact pattern above. Written report, 3 business days.</p>
+      <div class="feature" style="border-color:var(--accent)">
+        <div class="fn">Free — first 10 people</div>
+        <p>A Quick Check (anchor-average your backtest, run it against the strict bar, check any blending
+          logic) at no cost, while I build a track record. Best-effort, no guaranteed turnaround — see the
+          submission form for exactly what's required.</p>
       </div>
       <div class="feature">
         <div class="fn">Full Audit — $249</div>
-        <p>Everything in Quick Check, plus a held-out / out-of-sample test designed specifically for your
-          strategy and universe, plus a 30-minute call to walk through the findings. 7 business days.</p>
+        <p>A held-out / out-of-sample test designed specifically for your strategy and universe, plus a
+          30-minute call to walk through the findings. For anyone who wants more depth, or isn't among the
+          first 10. 7 business days.</p>
       </div>
     </div>
 
     <div class="cta-row" style="margin-top:22px">
-      <a class="btn-ghost" id="audit-cta" href="mailto:grant02339@gmail.com?subject=AnchorTest%20audit%20request">book an audit →</a>
+      <a class="btn-ghost" id="audit-cta" href="https://github.com/grant02339-ship-it/anchortest/issues/new?template=audit-request.yml" target="_blank" rel="noopener">request a free audit →</a>
       <div class="install-box" style="background:var(--surface-2);color:var(--ink);border-color:var(--line)">
         <code id="audit-email" style="color:var(--ink)">grant02339@gmail.com</code>
         <button class="copy-btn" onclick="copyEmail()" id="copy-email-btn">copy</button>
@@ -323,7 +325,9 @@ delta = compare(baseline, candidate)
     <p style="color:var(--ink-faint);font-size:.86rem;margin-top:16px;max-width:640px">
       This is a review of your validation PROCESS — not investment advice, not a recommendation to trade
       anything, and not a claim that any strategy is profitable. You get an honest report on what the
-      checks show, nothing more.
+      checks show, nothing more. Free submissions must already match
+      <code>tools/audit_submission_template.py</code>'s format — that's the fastest way to actually get one
+      done.
     </p>
   </div>
 </section>

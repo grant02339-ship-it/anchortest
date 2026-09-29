@@ -54,15 +54,18 @@ pip install -e .
 Requires Python 3.9+, `numpy`, `pandas`. No `scipy`, no broker SDK, no options-pricing library -- this works
 on any equity-curve-producing backtest, in any asset class, options or not.
 
-## Paid audits
+## Get your strategy audited
 
 I'll run these checks against YOUR backtest and send back a written report: what passed, what didn't, and
-why. Introductory pricing while I build a track record. **Quick Check ($49, 3 business days):**
-anchor-average your existing backtest, run it against the strict bar, check any blending logic for the
-artifact pattern above. **Full Audit ($249, 7 business days):** Quick Check plus a held-out/out-of-sample
-test designed for your specific strategy, plus a 30-minute call.
+why. **Free for the first 10 people** (best-effort, no guaranteed turnaround) — your submission must already
+be shaped like `tools/audit_submission_template.py` (see `examples/random_walk_example.py` for a full
+reference), then [open an audit-request issue](https://github.com/grant02339-ship-it/anchortest/issues/new?template=audit-request.yml).
+Once your submission's in that shape, `python tools/audit_runner.py your_submission.py --out report.md` runs
+it and drafts most of the report automatically. **Full Audit ($249, 7 business days):** a
+held-out/out-of-sample test designed for your specific strategy, plus a 30-minute call — for more depth, or
+if you're not among the first 10.
 This is a review of your validation process, not investment advice and not a claim that any strategy is
-profitable. Email grant02339@gmail.com to book, or see the landing page (`docs/index.html`).
+profitable.
 
 ## Quickstart
 

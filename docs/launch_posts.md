@@ -47,6 +47,9 @@ https://github.com/grant02339-ship-it/anchortest
 
 Happy to go into more detail on any of the three incidents in the comments, or on why I built this instead
 of just being more careful next time (spoiler: "be careful" already failed three times).
+
+Also doing free audits (running these checks against your own backtest) for the first 10 people who want
+one — details in the README if that's useful.
 ```
 
 *HN norms: no emoji, no hype adjectives, be ready to defend the technical claims in comments, and expect
@@ -91,11 +94,14 @@ https://github.com/grant02339-ship-it/anchortest
 
 Genuinely curious if others here have their own version of incident #1 — the single-anchor problem feels
 like it should be way more talked about than it is.
+
+Also offering free audits (I'll run these checks against your own backtest, no charge) for the first 10
+people — details in the repo if you want one.
 ```
 
-*Reddit norms: this community is skeptical of anything that smells like a sales pitch — the current draft
-leans on the bugs, not the product, which is right for this sub. No pricing/audit mention here; that reads
-as spammy in r/algotrading specifically even though it's fine in your own README.*
+*Reddit norms: this community is skeptical of anything that smells like a sales pitch, but a genuinely free
+offer with a hard cap (10) reads as generous, not spammy — very different from how a paid-tier mention would
+land here.*
 
 ---
 
@@ -130,7 +136,9 @@ on top.
 
 https://github.com/grant02339-ship-it/anchortest
 
-Feedback welcome, especially from anyone who's hit the single-anchor problem on a real QC strategy.
+Feedback welcome, especially from anyone who's hit the single-anchor problem on a real QC strategy. Also
+doing free audits against real strategies for the first 10 people who want one, if anyone's interested —
+details in the repo.
 ```
 
 *QC forum norms: more technical/neutral tone than Reddit is fine here, and QC users specifically will
