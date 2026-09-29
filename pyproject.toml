@@ -29,8 +29,8 @@ dependencies = [
 dev = ["pytest>=7.0"]
 
 [project.urls]
-Homepage = "https://github.com/YOUR-USERNAME/anchortest"
-Repository = "https://github.com/YOUR-USERNAME/anchortest"
+Homepage = "https://github.com/grant02339-ship-it/anchortest"
+Repository = "https://github.com/grant02339-ship-it/anchortest"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/anchortest"]

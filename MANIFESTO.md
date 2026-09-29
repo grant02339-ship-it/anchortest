@@ -93,7 +93,7 @@ A function that runs anyway doesn't.
 
 ## What we built
 
-**[AnchorTest](https://github.com/YOUR-USERNAME/anchortest)** is the smallest library that runs these three
+**[AnchorTest](https://github.com/grant02339-ship-it/anchortest)** is the smallest library that runs these three
 checks by default: anchor-average instead of trusting one phase, compare with the sign convention fixed in
 one place, and check any blending logic against a phase-invariant control before trusting it. Plus a small
 mutation-testing helper, because "we have tests" is a claim that deserves its own falsification check.
