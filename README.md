@@ -63,7 +63,10 @@ reference), then [open an audit-request issue](https://github.com/grant02339-shi
 Once your submission's in that shape, `python tools/audit_runner.py your_submission.py --out report.md` runs
 it and drafts most of the report automatically. **Full Audit ($249, 7 business days):** a
 held-out/out-of-sample test designed for your specific strategy, plus a 30-minute call — for more depth, or
-if you're not among the first 10.
+if you're not among the first 10. **Improvement Search ($349, 10 business days):** not just a diagnosis --
+I search a parameter space you define (`tools/improvement_submission_template.py`) and report only what
+survives a cheap screen AND full validation, same two-stage discipline this project's own search process
+uses. Most searches find nothing that clears the bar; that's reported honestly, not forced.
 This is a review of your validation process, not investment advice and not a claim that any strategy is
 profitable.
 
