@@ -16,12 +16,22 @@ body:
         submission (e.g. if it needs data/API access I don't have, or looks like it'll take much longer than
         the others). It's a review of your validation process, not investment advice, and not a claim that
         your strategy is profitable.
+
+        **This is automated**: submitting this issue runs your backtest and posts the results back as a
+        comment here (GitHub will email you) — usually within a few minutes, no manual step on my end. It
+        runs in an isolated, throwaway environment with no access to anything of mine beyond running your
+        code and reading its output.
   - type: input
     id: gist
     attributes:
       label: Link to your submission
-      description: A GitHub Gist or repo link containing your filled-in audit_submission_template.py. Do not paste code directly into this form.
-      placeholder: https://gist.github.com/...
+      description: >-
+        A RAW content link to your filled-in audit_submission_template.py -- not the normal gist/file page.
+        From a Gist: click the "Raw" button on your file and copy that URL (starts with
+        gist.githubusercontent.com). From a GitHub repo: click "Raw" on the file (starts with
+        raw.githubusercontent.com). This is checked automatically, so the wrong link type gets bounced back
+        with no manual step from me -- worth double-checking before you submit.
+      placeholder: https://gist.githubusercontent.com/you/.../raw/audit_submission.py
     validations:
       required: true
   - type: textarea

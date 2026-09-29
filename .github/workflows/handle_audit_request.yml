@@ -1,0 +1,119 @@
+name: Handle audit request
+
+# Fires when someone opens an issue via the "Free strategy audit request" template (.github/ISSUE_TEMPLATE/
+# audit-request.yml), which auto-applies the audit-request label. Three jobs, kept in strict permission
+# tiers on purpose:
+#
+#   1. check-quota  (trusted)   -- reads issue history, decides if the free batch of 10 is already full.
+#   2. run-audit    (UNTRUSTED) -- downloads and EXECUTES the submitter's own code. contents:read only,
+#                                  no issues/PR write, no secrets exposed to it.
+#   3. reply        (trusted)   -- posts the result as an issue comment. Never executes anything itself,
+#                                  only reads run-audit's output artifact (a text file) and posts it.
+#
+# SAFETY NOTE: this replaces a human reading the submitted code before it runs. An ephemeral GitHub-hosted
+# runner (destroyed after the job, no repo secrets exposed to it) is safer than running this on a personal
+# machine, but it is NOT a full sandbox -- the runner still has ~15 minutes of outbound internet access.
+# Residual risk is bounded to that runner's own lifetime; it cannot write to this repo, comment anywhere,
+# or see any secret, because job 2's permissions block never grants any of that.
+#
+# WANT A MANUAL SAFETY CHECK BACK? Change run-audit's `if:` below to also require a maintainer-applied
+# label, e.g. `&& contains(github.event.issue.labels.*.name, 'approved-to-run')` -- then nothing executes
+# until you've read the submission and added that label yourself.
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  check-quota:
+    if: contains(github.event.issue.labels.*.name, 'audit-request')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: read
+    outputs:
+      full: ${{ steps.count.outputs.full }}
+    steps:
+      - id: count
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          completed=$(gh issue list --repo "${{ github.repository }}" --label audit-completed --state all --json number --jq 'length')
+          echo "completed so far: $completed"
+          if [ "$completed" -ge 10 ]; then echo "full=true" >> "$GITHUB_OUTPUT"; else echo "full=false" >> "$GITHUB_OUTPUT"; fi
+
+  run-audit:
+    needs: check-quota
+    if: needs.check-quota.outputs.full == 'false'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read   # UNTRUSTED SUBMITTED CODE RUNS IN THIS JOB -- nothing beyond read-only checkout.
+    timeout-minutes: 15
+    outputs:
+      status: ${{ steps.run.outputs.status }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -e ".[dev]"
+
+      - name: Extract submission URL from the issue body
+        id: extract
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}   # passed via env -- never interpolate this into a run: shell line directly
+        run: python3 tools/ci/extract_submission_url.py
+
+      - name: Download submission
+        if: steps.extract.outputs.url != ''
+        env:
+          SUBMISSION_URL: ${{ steps.extract.outputs.url }}
+        run: curl -fsSL --max-time 30 --max-filesize 200000 "$SUBMISSION_URL" -o submission.py || true
+
+      - name: Run the audit
+        id: run
+        run: |
+          if [ ! -f submission.py ]; then
+            printf '%s\n' "Couldn't find a usable submission link in your issue. It needs to be a **raw** content URL -- starting with \`https://gist.githubusercontent.com/\` or \`https://raw.githubusercontent.com/\`, not the normal gist/file page. Edit your issue with a raw link; I'll pick it up, or comment here and I'll take a manual look." > report.md
+            echo "status=no_submission" >> "$GITHUB_OUTPUT"
+          elif python3 tools/audit_runner.py submission.py --out report.md; then
+            echo "status=ok" >> "$GITHUB_OUTPUT"
+          else
+            printf '%s\n' "Your submission didn't run cleanly. Common causes: missing \`backtest\`/\`PARAMS\`/\`CYCLE_DAYS\`, an import this runner doesn't have, a bug in the backtest itself, or it ran too long (5 min cap). I'll take a manual look and follow up here." > report.md
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: report
+          path: report.md
+
+  reply:
+    needs: [check-quota, run-audit]
+    if: always() && needs.check-quota.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Prepare a batch-full reply
+        if: needs.check-quota.outputs.full == 'true'
+        run: printf '%s\n' "Thanks for the interest! The free batch of 10 audits is already full. Leaving this open in case a spot opens up -- or see the README for the paid Full Audit tier." > report.md
+      - uses: actions/download-artifact@v4
+        if: needs.check-quota.outputs.full != 'true'
+        with:
+          name: report
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('report.md', 'utf8').slice(0, 60000);
+            await github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.issue.number, body,
+            });
+            const full = "${{ needs.check-quota.outputs.full }}" === "true";
+            const status = "${{ needs.run-audit.outputs.status }}";
+            const label = full ? "audit-batch-full" : (status === "ok" ? "audit-completed" : "audit-needs-manual-review");
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.issue.number, labels: [label],
+            });
