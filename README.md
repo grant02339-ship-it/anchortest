@@ -15,7 +15,9 @@ would have caught the bug you didn't think to write a test for.
 
 ## Why this exists
 
-Three real incidents from one live quant-research project, each of which shipped before it was caught:
+Three real incidents from **options-strategy-research**, my ongoing systematic options-strategy backtest
+research project (backtest-only, no live trading — not published), each of which shipped before it was
+caught:
 
 > **1. A single-anchor backtest is a sample of one.** A strategy's backtest struck rebalance dates as a
 > fixed stride starting from wherever the data happened to begin. Sweeping every possible phase of a 30-day

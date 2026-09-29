@@ -16,7 +16,8 @@ Show HN: AnchorTest – catch backtest overfitting before you ship a strategy
 
 **Text:**
 ```
-I spent a while on a quant-research side project and kept re-discovering the same three mistakes, each of
+I've been working on options-strategy-research, a backtest-only systematic options-strategy project, and
+kept re-discovering the same three mistakes, each of
 which looked like a completely valid result until something caught it:
 
 1. A backtest that struck rebalance dates as a fixed stride from wherever the data happened to start. The
@@ -64,7 +65,8 @@ I kept shipping backtest bugs that all looked like valid results — built a sma
 
 **Body:**
 ```
-Long-time lurker, finally have something concrete to share. Working on a systematic strategy, I kept hitting
+Long-time lurker, finally have something concrete to share. Working on options-strategy-research (a
+backtest-only, systematic options strategy), I kept hitting
 the same category of mistake: bugs that don't look like bugs, because the code runs fine and the number is
 real.
 
@@ -113,7 +115,7 @@ numpy+pandas only).
 
 The core idea is anchor-averaging — instead of running your backtest once from a fixed start date, run it
 across every phase of your own rebalance cycle and look at the mean, median, minimum, and standard
-deviation of Sharpe, not a single number. On one project this found Sharpe ranging 0.35 to 1.46 across 30
+deviation of Sharpe, not a single number. On options-strategy-research this found Sharpe ranging 0.35 to 1.46 across 30
 phases of a 30-day cycle, which is a wider spread than most of us probably assume when reporting a single
 backtest result.
 

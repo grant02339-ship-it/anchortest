@@ -4,7 +4,8 @@ Every backtester knows to check for lookahead bias. Fewer check for the three th
 one produces a result that looks completely honest. The code runs. The number is real. The chart is
 plausible. And it's still wrong, in a way that a normal test suite and a normal code review will not catch.
 
-These are three real incidents from one live quant-research project. All three shipped — became "confirmed"
+These are three real incidents from **options-strategy-research**, my ongoing (backtest-only, no live
+trading) systematic options-strategy research project. All three shipped — became "confirmed"
 results the project acted on — before something caught them.
 
 ## 1. The single-anchor illusion
