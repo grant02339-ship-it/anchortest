@@ -129,6 +129,7 @@
     <nav class="nav-links">
       <a href="#incidents">incidents</a>
       <a href="#checks">checks</a>
+      <a href="#audit">audits</a>
       <a href="#install">install</a>
       <a href="https://github.com/YOUR-USERNAME/anchortest" target="_blank" rel="noopener">github</a>
     </nav>
@@ -288,6 +289,46 @@ delta = compare(baseline, candidate)
 
 <hr class="rule">
 
+<section id="audit">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">work with me</p>
+      <h2>Get your own strategy audited</h2>
+      <p>Before AnchorTest was a library, it was three case files from one real project. I'll run the same
+        checks against YOUR backtest and send back a written report: what passed, what didn't, and exactly
+        why — including when nothing passes.</p>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature">
+        <div class="fn">Quick Check — $199</div>
+        <p>Anchor-average your existing backtest, run it against the strict multi-metric bar, check any
+          blending/ensembling logic for the artifact pattern above. Written report, 3 business days.</p>
+      </div>
+      <div class="feature">
+        <div class="fn">Full Audit — $749</div>
+        <p>Everything in Quick Check, plus a held-out / out-of-sample test designed specifically for your
+          strategy and universe, plus a 30-minute call to walk through the findings. 7 business days.</p>
+      </div>
+    </div>
+
+    <div class="cta-row" style="margin-top:22px">
+      <a class="btn-ghost" id="audit-cta" href="mailto:grant02339@gmail.com?subject=AnchorTest%20audit%20request">book an audit →</a>
+      <div class="install-box" style="background:var(--surface-2);color:var(--ink);border-color:var(--line)">
+        <code id="audit-email" style="color:var(--ink)">grant02339@gmail.com</code>
+        <button class="copy-btn" onclick="copyEmail()" id="copy-email-btn">copy</button>
+      </div>
+    </div>
+    <p style="color:var(--ink-faint);font-size:.86rem;margin-top:16px;max-width:640px">
+      This is a review of your validation PROCESS — not investment advice, not a recommendation to trade
+      anything, and not a claim that any strategy is profitable. You get an honest report on what the
+      checks show, nothing more.
+    </p>
+  </div>
+</section>
+
+<hr class="rule">
+
 <section id="philosophy">
   <div class="wrap">
     <div class="section-head">
@@ -322,12 +363,14 @@ delta = compare(baseline, candidate)
 </footer>
 
 <script>
-function copyInstall(){
-  var text = document.getElementById('install-cmd').textContent;
-  var btn = document.getElementById('copy-btn');
+function copyText(elId, btnId){
+  var text = document.getElementById(elId).textContent;
+  var btn = document.getElementById(btnId);
   function done(ok){ btn.textContent = ok ? 'copied' : 'select + ⌘C'; setTimeout(function(){ btn.textContent='copy'; }, 1400); }
   try{
     navigator.clipboard.writeText(text).then(function(){ done(true); }, function(){ done(false); });
   }catch(e){ done(false); }
 }
+function copyInstall(){ copyText('install-cmd', 'copy-btn'); }
+function copyEmail(){ copyText('audit-email', 'copy-email-btn'); }
 </script>

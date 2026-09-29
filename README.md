@@ -52,6 +52,15 @@ pip install -e .
 Requires Python 3.9+, `numpy`, `pandas`. No `scipy`, no broker SDK, no options-pricing library -- this works
 on any equity-curve-producing backtest, in any asset class, options or not.
 
+## Paid audits
+
+I'll run these checks against YOUR backtest and send back a written report: what passed, what didn't, and
+why. **Quick Check ($199, 3 business days):** anchor-average your existing backtest, run it against the
+strict bar, check any blending logic for the artifact pattern above. **Full Audit ($749, 7 business days):**
+Quick Check plus a held-out/out-of-sample test designed for your specific strategy, plus a 30-minute call.
+This is a review of your validation process, not investment advice and not a claim that any strategy is
+profitable. Email grant02339@gmail.com to book, or see the landing page (`docs/index.html`).
+
 ## Quickstart
 
 ```python
