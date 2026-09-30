@@ -1,0 +1,58 @@
+name: Free Improvement Search request
+description: Request one of the first 5 free parameter searches for your strategy
+title: "[improve] "
+labels: ["improvement-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Free for the first 5 people (this will become a paid tier once there's a track record). Before
+        filling this in, your backtest needs to already be shaped like
+        `tools/improvement_submission_template.py` (`backtest(params, start_shift=0)`, `BASELINE_PARAMS`,
+        `SEARCH_SPACE`, `CYCLE_DAYS`) -- see `examples/random_walk_example.py` for a runnable `backtest()`
+        reference. Keep `SEARCH_SPACE` to 40 candidate values or fewer (summed across all parameters) --
+        larger spaces will be rejected. Submissions that don't match this shape will be bounced back asking
+        for that first.
+
+        This is free, unpaid, best-effort work -- no guaranteed turnaround, and I may decline a submission
+        (data/API access I don't have, a search space too large, etc). It's a review of your validation
+        process and a search for what survives it, not investment advice, and not a claim that any
+        strategy is profitable.
+
+        **This is automated**: submitting this issue searches your declared parameter space and posts the
+        results back as a comment here (GitHub will email you) -- usually within a few minutes, no manual
+        step on my end. It runs in an isolated, throwaway environment with no access to anything of mine
+        beyond running your code and reading its output.
+  - type: input
+    id: gist
+    attributes:
+      label: Link to your submission
+      description: >-
+        A RAW content link to your filled-in improvement_submission_template.py -- not the normal gist/file
+        page. From a Gist: click "Raw" on your file and copy that URL (starts with
+        gist.githubusercontent.com). From a GitHub repo: click "Raw" on the file (starts with
+        raw.githubusercontent.com). Checked automatically, so the wrong link type gets bounced back with no
+        manual step from me.
+      placeholder: https://gist.githubusercontent.com/you/.../raw/improvement_submission.py
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: One paragraph on the strategy and what you're hoping the search finds
+      description: What it trades, roughly how, and which parameters you're most curious about.
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Before you submit
+      options:
+        - label: My submission follows the exact shape in tools/improvement_submission_template.py (names unchanged)
+          required: true
+        - label: My SEARCH_SPACE has 40 or fewer total candidate values
+          required: true
+        - label: I understand this is free, best-effort, with no guaranteed turnaround
+          required: true
+        - label: I understand a result that clears the bar is a hypothesis worth a closer look, not a confirmed edge -- not investment advice
+          required: true

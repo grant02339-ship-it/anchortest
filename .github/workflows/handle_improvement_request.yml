@@ -1,0 +1,108 @@
+name: Handle improvement search request
+
+# Fires when someone opens an issue via the "Free Improvement Search request" template (.github/
+# ISSUE_TEMPLATE/improvement-request.yml), which auto-applies the improvement-request label. Same
+# three-job, strict-permission-tier structure as handle_audit_request.yml -- see that file's header
+# comment for the full rationale (untrusted-code isolation, why env: not shell interpolation, etc).
+# Free batch capped smaller here (5, not 10) since a search costs more time to review than a single audit.
+#
+# WANT A MANUAL SAFETY CHECK BACK? Add `&& contains(github.event.issue.labels.*.name, 'approved-to-run')`
+# to run-search's `if:` below.
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  check-quota:
+    if: contains(github.event.issue.labels.*.name, 'improvement-request')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: read
+    outputs:
+      full: ${{ steps.count.outputs.full }}
+    steps:
+      - id: count
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          completed=$(gh issue list --repo "${{ github.repository }}" --label improvement-completed --state all --json number --jq 'length')
+          echo "completed so far: $completed"
+          if [ "$completed" -ge 5 ]; then echo "full=true" >> "$GITHUB_OUTPUT"; else echo "full=false" >> "$GITHUB_OUTPUT"; fi
+
+  run-search:
+    needs: check-quota
+    if: needs.check-quota.outputs.full == 'false'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read   # UNTRUSTED SUBMITTED CODE RUNS IN THIS JOB -- nothing beyond read-only checkout.
+    timeout-minutes: 20   # improvement_runner.py's own subprocess timeout is 900s; this gives setup headroom
+    outputs:
+      status: ${{ steps.run.outputs.status }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -e ".[dev]"
+
+      - name: Extract submission URL from the issue body
+        id: extract
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: python3 tools/ci/extract_submission_url.py
+
+      - name: Download submission
+        if: steps.extract.outputs.url != ''
+        env:
+          SUBMISSION_URL: ${{ steps.extract.outputs.url }}
+        run: curl -fsSL --max-time 30 --max-filesize 200000 "$SUBMISSION_URL" -o submission.py || true
+
+      - name: Run the search
+        id: run
+        run: |
+          if [ ! -f submission.py ]; then
+            printf '%s\n' "Couldn't find a usable submission link in your issue. It needs to be a **raw** content URL -- starting with \`https://gist.githubusercontent.com/\` or \`https://raw.githubusercontent.com/\`, not the normal gist/file page. Edit your issue with a raw link; I'll pick it up, or comment here and I'll take a manual look." > report.md
+            echo "status=no_submission" >> "$GITHUB_OUTPUT"
+          elif python3 tools/improvement_runner.py submission.py --out report.md; then
+            echo "status=ok" >> "$GITHUB_OUTPUT"
+          else
+            printf '%s\n' "Your submission didn't run cleanly. Common causes: missing \`backtest\`/\`BASELINE_PARAMS\`/\`SEARCH_SPACE\`/\`CYCLE_DAYS\`, a search space over the 40-candidate cap, an import this runner doesn't have, a bug in the backtest, or it ran too long. I'll take a manual look and follow up here." > report.md
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: report
+          path: report.md
+
+  reply:
+    needs: [check-quota, run-search]
+    if: always() && needs.check-quota.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Prepare a batch-full reply
+        if: needs.check-quota.outputs.full == 'true'
+        run: printf '%s\n' "Thanks for the interest! The free batch of 5 Improvement Searches is already full. Leaving this open in case a spot opens up." > report.md
+      - uses: actions/download-artifact@v4
+        if: needs.check-quota.outputs.full != 'true'
+        with:
+          name: report
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('report.md', 'utf8').slice(0, 60000);
+            await github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.issue.number, body,
+            });
+            const full = "${{ needs.check-quota.outputs.full }}" === "true";
+            const status = "${{ needs.run-search.outputs.status }}";
+            const label = full ? "improvement-batch-full" : (status === "ok" ? "improvement-completed" : "improvement-needs-manual-review");
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.issue.number, labels: [label],
+            });
